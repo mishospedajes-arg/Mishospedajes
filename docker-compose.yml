@@ -1,0 +1,19 @@
+version: '3.8'
+services:
+  db:
+    image: mysql:8.0
+    container_name: vagar_mysql_db
+    restart: always
+    environment:
+      MYSQL_DATABASE: vagar_db
+      MYSQL_USER: vagar_user
+      MYSQL_PASSWORD: vagar_password
+      MYSQL_ROOT_PASSWORD: root_password
+    ports:
+      - '3306:3306'
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+volumes:
+  mysql_data:
