@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,27 +13,35 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  
+
+  const router = useRouter();
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
+    console.log("Attempting login...");
     const result = await signIn("credentials", {
-      redirect: true,
+      redirect: false,
       callbackUrl: "/admin/dashboard",
       email,
       password,
     });
+    console.log("Login result:", result);
 
     if (result?.error) {
+      console.error("Login failed:", result.error);
       setError("Credenciales inválidas. Por favor, intente de nuevo.");
       toast({
         title: "Error de autenticación",
         description: "Credenciales inválidas. Por favor, intente de nuevo.",
         variant: "destructive",
       });
+    } else if (result?.ok) {
+      console.log("Login successful, redirecting...");
+      router.push("/admin/dashboard");
+      router.refresh(); // Ensure headers/cookies are re-read
     }
   };
 
